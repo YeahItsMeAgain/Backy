@@ -1,3 +1,5 @@
+pub mod add;
+use super::config;
 use clap::{Args, Parser, Subcommand};
 use clio::ClioPath;
 
