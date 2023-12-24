@@ -5,6 +5,7 @@ use std::{
 
 use crate::config::CONFIG;
 use anyhow::{Context, Result};
+use chrono;
 use std::path::Path;
 
 pub fn init() -> Result<()> {
@@ -30,7 +31,68 @@ pub fn init() -> Result<()> {
         .context("Failed to init repo")?;
 
     if !output.stderr.is_empty() {
-        log::error!("{}", String::from_utf8_lossy(&output.stderr))
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
+pub fn push() -> Result<()> {
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(format!(
+            "git add .; git commit -m \"{}\"; git push origin master",
+            chrono::offset::Local::now()
+        ))
+        .current_dir(&CONFIG.vault_path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .output()
+        .context("Failed to push changes")?;
+
+    if !output.stderr.is_empty() {
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
+fn track_file(path: String) -> Result<()> {
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(format!(
+            "git lfs track \"*.{}\"; git add .gitattributes; git commit -m \"Updated .gitattributes\"",
+            Path::new(&path).extension().unwrap().to_str().unwrap()
+        ))
+        .current_dir(&CONFIG.vault_path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .output()
+        .context("Failed to track new file")?;
+
+    if !output.stderr.is_empty() {
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
+pub fn add_file(path: String) -> Result<()> {
+    track_file(path.clone())?;
+
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(format!(
+            "git add {} && git commit -m \"Added {} - {}\"",
+            path,
+            path,
+            chrono::offset::Local::now()
+        ))
+        .current_dir(&CONFIG.vault_path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .output()
+        .context("Failed to push changes")?;
+
+    if !output.stderr.is_empty() {
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
     }
     Ok(())
 }

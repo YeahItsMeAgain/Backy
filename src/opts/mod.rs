@@ -1,6 +1,7 @@
 pub mod add;
 pub mod remove;
 pub mod list;
+pub mod push;
 pub mod vault;
 
 use super::config;
@@ -22,7 +23,7 @@ pub enum Commands {
     Add(AddArgs),
     Remove(RemoveArgs),
     List,
-    // TODO: Push
+    Push,
     // TODO: Pull
     // TODO: Restore
 }

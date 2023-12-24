@@ -5,6 +5,8 @@ use anyhow::{bail, Context, Result};
 use std::{fs, path::Path};
 
 pub fn run(args: RemoveArgs) -> Result<()> {
+
+    // TODO: git rm file + commit.
     log::info!("Removing {}", args.file.display());
 
     let full_path = fs::canonicalize(args.file.as_os_str()).unwrap();

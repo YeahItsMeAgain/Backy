@@ -15,6 +15,7 @@ fn main() -> Result<()> {
             opts::Commands::Add(args) => opts::add::run(args)?,
             opts::Commands::Remove(args) => opts::remove::run(args)?,
             opts::Commands::List => opts::list::run()?,
+            opts::Commands::Push => opts::push::run()?,
         }
     }
 

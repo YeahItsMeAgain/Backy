@@ -1,5 +1,5 @@
-use super::AddArgs;
 use super::vault;
+use super::AddArgs;
 
 use super::config::CONFIG;
 use anyhow::{bail, Context, Result};
@@ -21,10 +21,12 @@ pub fn run(args: AddArgs) -> Result<()> {
         full_path.display()
     ))?;
 
-    std::os::unix::fs::symlink(full_path.clone(), backup_path).context(format!(
+    std::fs::hard_link(full_path.clone(), backup_path).context(format!(
         "Failed to create backup for {}",
         full_path.display()
     ))?;
+
+    vault::add_file(backup_path.as_os_str().to_str().unwrap().to_owned())?;
 
     log::info!("Successfully Added {}", args.file.display());
     Ok(())
