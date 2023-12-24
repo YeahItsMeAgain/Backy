@@ -1,5 +1,6 @@
 pub mod add;
 pub mod remove;
+pub mod list;
 
 use super::config;
 use clap::{Args, Parser, Subcommand};
@@ -11,9 +12,6 @@ use clio::ClioPath;
 #[command(version = "1.0")]
 #[command(about = "Backy - The backup tool")]
 pub struct Opts {
-    #[arg(long, action=clap::ArgAction::SetTrue)]
-    pub daemon: Option<bool>,
-
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
@@ -22,9 +20,10 @@ pub struct Opts {
 pub enum Commands {
     Add(AddArgs),
     Remove(RemoveArgs),
-    // TODO: List
+    List,
+    // TODO: Pull
+    // TODO: Push
     // TODO: Restore
-    // TODO: Sync
 }
 
 #[derive(Args, Debug)]
