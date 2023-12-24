@@ -4,7 +4,7 @@ use std::fs;
 use walkdir::WalkDir;
 
 pub fn run() -> Result<()> {
-    for entry in WalkDir::new(CONFIG.backup_folder.clone())
+    for entry in WalkDir::new(CONFIG.vault_path.clone())
         .into_iter()
         .filter_map(Result::ok)
         .filter(|e| e.file_type().is_symlink())

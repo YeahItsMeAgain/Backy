@@ -1,4 +1,5 @@
 use super::AddArgs;
+use super::vault;
 
 use super::config::CONFIG;
 use anyhow::{bail, Context, Result};
@@ -6,14 +7,10 @@ use std::{fs, path::Path};
 
 pub fn run(args: AddArgs) -> Result<()> {
     log::info!("Adding {}", args.file.display());
-
-    fs::create_dir_all(&CONFIG.backup_folder).context(format!(
-        "Failed to create backup folder: {}",
-        CONFIG.backup_folder
-    ))?;
+    vault::init()?;
 
     let full_path = fs::canonicalize(args.file.as_os_str()).unwrap();
-    let backup_path = format!("{}{}", CONFIG.backup_folder, full_path.display());
+    let backup_path = format!("{}{}", CONFIG.vault_path, full_path.display());
     let backup_path = Path::new(&backup_path);
     if backup_path.exists() {
         bail!("{} Already exists", backup_path.display());

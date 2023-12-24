@@ -1,3 +1,4 @@
 {
-    "backup_folder": "XXXXXXXXXXX"
+    "vault_path": "XXXXXXXXXXX",
+    "vault_repo": "XXXXXXXXXXX"
 }

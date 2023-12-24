@@ -1,6 +1,7 @@
 pub mod add;
 pub mod remove;
 pub mod list;
+pub mod vault;
 
 use super::config;
 use clap::{Args, Parser, Subcommand};
@@ -21,8 +22,8 @@ pub enum Commands {
     Add(AddArgs),
     Remove(RemoveArgs),
     List,
-    // TODO: Pull
     // TODO: Push
+    // TODO: Pull
     // TODO: Restore
 }
 
