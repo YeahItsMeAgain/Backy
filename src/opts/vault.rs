@@ -55,6 +55,22 @@ pub fn push() -> Result<()> {
     Ok(())
 }
 
+pub fn pull() -> Result<()> {
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg("git pull origin master -q")
+        .current_dir(&CONFIG.vault_path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .output()
+        .context("Failed to pull changes")?;
+
+    if !output.stderr.is_empty() {
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
 fn track_file(path: String) -> Result<()> {
     let output = Command::new("sh")
         .arg("-c")

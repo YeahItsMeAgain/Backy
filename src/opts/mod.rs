@@ -1,7 +1,8 @@
 pub mod add;
-pub mod remove;
 pub mod list;
+pub mod pull;
 pub mod push;
+pub mod remove;
 pub mod vault;
 
 use super::config;
@@ -24,18 +25,15 @@ pub enum Commands {
     Remove(RemoveArgs),
     List,
     Push,
-    // TODO: Pull
+    Pull,
     // TODO: Restore
 }
 
 #[derive(Args, Debug)]
-pub struct AddArgs {
+pub struct FileArgs {
     #[clap(value_parser = clap::value_parser!(ClioPath).exists().is_file().not_tty())]
     pub file: ClioPath,
 }
 
-#[derive(Args, Debug)]
-pub struct RemoveArgs {
-    #[clap(value_parser = clap::value_parser!(ClioPath).exists().is_file().not_tty())]
-    pub file: ClioPath,
-}
+type AddArgs = FileArgs;
+type RemoveArgs = FileArgs;
