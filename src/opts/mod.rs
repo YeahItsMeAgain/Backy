@@ -3,6 +3,7 @@ pub mod list;
 pub mod pull;
 pub mod push;
 pub mod remove;
+pub mod restore;
 pub mod vault;
 
 use super::config;
@@ -26,7 +27,7 @@ pub enum Commands {
     List,
     Push,
     Pull,
-    // TODO: Restore
+    Restore(RestoreArgs),
 }
 
 #[derive(Args, Debug)]
@@ -37,3 +38,12 @@ pub struct FileArgs {
 
 type AddArgs = FileArgs;
 type RemoveArgs = FileArgs;
+
+#[derive(Args, Debug)]
+pub struct RestoreArgs {
+    #[clap(value_parser = clap::value_parser!(ClioPath).exists().is_file().not_tty())]
+    pub file: Option<ClioPath>,
+
+    #[arg(long, action=clap::ArgAction::SetTrue)]
+    pub all: Option<bool>,
+}

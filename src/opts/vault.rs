@@ -1,12 +1,15 @@
 use std::{
     fs,
+    path::PathBuf,
     process::{Command, Stdio},
 };
 
 use crate::config::CONFIG;
 use anyhow::{Context, Result};
 use chrono;
+use generator::{done, Generator, Gn};
 use std::path::Path;
+use walkdir::WalkDir;
 
 pub fn init() -> Result<()> {
     if Path::join(Path::new(&CONFIG.vault_path), ".git").exists() {
@@ -71,6 +74,24 @@ pub fn pull() -> Result<()> {
     Ok(())
 }
 
+pub fn list() -> Result<Generator<'static, (), PathBuf>> {
+    let vault_git_path = Path::join(Path::new(&CONFIG.vault_path), ".git");
+    Ok(Gn::new_scoped(move |mut scope| {
+        for entry in WalkDir::new(CONFIG.vault_path.clone())
+            .into_iter()
+            .filter_map(Result::ok)
+            .filter(|e| {
+                e.file_type().is_file()
+                    && e.path().parent().unwrap() != Path::new(&CONFIG.vault_path)
+                    && !e.path().starts_with(vault_git_path.clone())
+            })
+        {
+            scope.yield_(entry.into_path());
+        }
+        done!();
+    }))
+}
+
 fn track_file(path: String) -> Result<()> {
     let output = Command::new("sh")
         .arg("-c")
@@ -96,7 +117,7 @@ pub fn add_file(path: String) -> Result<()> {
     let output = Command::new("sh")
         .arg("-c")
         .arg(format!(
-            "git add {} && git commit -m \"Added {} - {}\"",
+            "git add {} && git commit -m \"Added {} - {}\" -q",
             path,
             path,
             chrono::offset::Local::now()
