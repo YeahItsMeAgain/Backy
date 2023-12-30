@@ -26,7 +26,7 @@ pub fn run(args: AddArgs) -> Result<()> {
         full_path.display()
     ))?;
 
-    vault::add_file(backup_path.as_os_str().to_str().unwrap().to_owned())?;
+    vault::add(backup_path.as_os_str().to_str().unwrap().to_owned())?;
 
     log::info!("Successfully Added {}", args.file.display());
     Ok(())

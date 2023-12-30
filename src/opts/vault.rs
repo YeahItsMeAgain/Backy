@@ -43,7 +43,7 @@ pub fn push() -> Result<()> {
     let output = Command::new("sh")
         .arg("-c")
         .arg(format!(
-            "git add .; git commit -m \"{}\"; git push origin master",
+            "git add .; git commit -m \"{}\" -q; git push origin master -q",
             chrono::offset::Local::now()
         ))
         .current_dir(&config::get().vault)
@@ -111,13 +111,34 @@ fn track_file(path: String) -> Result<()> {
     Ok(())
 }
 
-pub fn add_file(path: String) -> Result<()> {
+pub fn add(path: String) -> Result<()> {
     track_file(path.clone())?;
 
     let output = Command::new("sh")
         .arg("-c")
         .arg(format!(
             "git add {} && git commit -m \"Added {} - {}\" -q",
+            path,
+            path,
+            chrono::offset::Local::now()
+        ))
+        .current_dir(&config::get().vault)
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .output()
+        .context("Failed to push changes")?;
+
+    if !output.stderr.is_empty() {
+        log::warn!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
+pub fn rm(path: String) -> Result<()> {
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(format!(
+            "git rm {} && git commit -m \"Removed {} - {}\" -q",
             path,
             path,
             chrono::offset::Local::now()
