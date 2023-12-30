@@ -1,7 +1,7 @@
 use super::vault;
 use super::AddArgs;
+use crate::opts::config;
 
-use super::config::CONFIG;
 use anyhow::{bail, Context, Result};
 use std::{fs, path::Path};
 
@@ -10,7 +10,7 @@ pub fn run(args: AddArgs) -> Result<()> {
     vault::init()?;
 
     let full_path = fs::canonicalize(args.file.as_os_str()).unwrap();
-    let backup_path = format!("{}{}", CONFIG.vault_path, full_path.display());
+    let backup_path = format!("{}{}", config::get().vault, full_path.display());
     let backup_path = Path::new(&backup_path);
     if backup_path.exists() {
         bail!("{} Already exists", backup_path.display());

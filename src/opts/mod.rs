@@ -1,4 +1,5 @@
 pub mod add;
+pub mod config;
 pub mod list;
 pub mod pull;
 pub mod push;
@@ -6,7 +7,6 @@ pub mod remove;
 pub mod restore;
 pub mod vault;
 
-use super::config;
 use clap::{Args, Parser, Subcommand};
 use clio::ClioPath;
 
@@ -28,6 +28,7 @@ pub enum Commands {
     Push,
     Pull,
     Restore(RestoreArgs),
+    Config(ConfigArgs),
 }
 
 #[derive(Args, Debug)]
@@ -46,4 +47,14 @@ pub struct RestoreArgs {
 
     #[arg(long, action=clap::ArgAction::SetTrue)]
     pub all: Option<bool>,
+}
+
+#[derive(Args, Debug)]
+pub struct ConfigArgs {
+    #[arg(long)]
+    #[clap(value_parser = clap::value_parser!(ClioPath).exists().is_dir().not_tty())]
+    pub vault: Option<ClioPath>,
+
+    #[arg(long)]
+    pub repo: Option<String>,
 }

@@ -1,7 +1,7 @@
 use super::vault;
 use super::RestoreArgs;
+use crate::opts::config;
 
-use super::config::CONFIG;
 use anyhow::Context;
 use anyhow::{bail, Result};
 use std::{fs, path::Path};
@@ -17,7 +17,7 @@ fn restore_single_file(file: &Path) -> Result<()> {
     log::info!("Restoring {}", file.display());
 
     let full_path = fs::canonicalize(file).context("Failed to get full path")?;
-    let backup_path = format!("{}{}", CONFIG.vault_path, full_path.display());
+    let backup_path = format!("{}{}", config::get().vault, full_path.display());
     let backup_path = Path::new(&backup_path);
 
     if !backup_path.exists() {
@@ -38,7 +38,7 @@ fn restore_all_files() -> Result<()> {
             for entry in entries {
                 let backup_path = entry.clone();
                 let original_path = entry.to_string_lossy();
-                let original_path = original_path.strip_prefix(&CONFIG.vault_path).unwrap();
+                let original_path = original_path.strip_prefix(&config::get().vault).unwrap();
 
                 fs::copy(backup_path, original_path)
                     .with_context(|| format!("Failed Restoring {}", original_path))?;

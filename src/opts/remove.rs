@@ -1,16 +1,16 @@
+use crate::opts::config;
+
 use super::RemoveArgs;
 
-use super::config::CONFIG;
 use anyhow::{bail, Context, Result};
 use std::{fs, path::Path};
 
 pub fn run(args: RemoveArgs) -> Result<()> {
-
     // TODO: git rm file + commit.
     log::info!("Removing {}", args.file.display());
 
     let full_path = fs::canonicalize(args.file.as_os_str()).unwrap();
-    let backup_path = format!("{}{}", CONFIG.vault_path, full_path.display());
+    let backup_path = format!("{}{}", config::get().vault, full_path.display());
     let backup_path = Path::new(&backup_path);
     if !backup_path.exists() {
         bail!("{} Doesn't exist", backup_path.display());
@@ -19,7 +19,7 @@ pub fn run(args: RemoveArgs) -> Result<()> {
     fs::remove_file(backup_path).context(format!("Failed to remove {}", backup_path.display()))?;
 
     // Deleting all the empty folders.
-    let vault_folder = fs::canonicalize(CONFIG.vault_path.clone()).unwrap();
+    let vault_folder = fs::canonicalize(config::get().vault.clone()).unwrap();
 
     if let Some(mut folder_up) = backup_path.parent() {
         while folder_up.read_dir()?.next().is_none() {

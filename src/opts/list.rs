@@ -1,4 +1,5 @@
-use super::{config::CONFIG, vault};
+use super::vault;
+use crate::opts::config;
 use anyhow::Result;
 
 pub fn run() -> Result<()> {
@@ -10,7 +11,7 @@ pub fn run() -> Result<()> {
                     entry
                         .display()
                         .to_string()
-                        .strip_prefix(&CONFIG.vault_path)
+                        .strip_prefix(&config::get().vault)
                         .unwrap()
                 );
             }

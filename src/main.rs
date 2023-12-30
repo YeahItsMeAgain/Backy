@@ -1,4 +1,7 @@
-pub mod config;
+#[macro_use]
+extern crate serde_derive;
+extern crate preferences;
+
 pub mod logger;
 pub mod opts;
 
@@ -18,6 +21,7 @@ fn main() -> Result<()> {
             opts::Commands::Push => opts::push::run(),
             opts::Commands::Pull => opts::pull::run(),
             opts::Commands::Restore(args) => opts::restore::run(args),
+            opts::Commands::Config(args) => opts::config::run(args),
         }?,
         None => opts::Opts::command().print_long_help()?,
     }
